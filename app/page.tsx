@@ -1,95 +1,123 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+"use client";
 
-export default function Home() {
+import { CheckIcon, CloseIcon } from "@chakra-ui/icons";
+import {
+  Box,
+  Container,
+  Heading,
+  SimpleGrid,
+  Text,
+  Card,
+  CardHeader,
+  CardBody,
+  CardFooter,
+  HStack,
+  Button,
+  Flex,
+} from "@chakra-ui/react";
+import { initialize } from "@paunovic/questionnaire";
+import { useEffect, useState } from "react";
+
+// Initialization with default language pack
+const QUESTIONNAIRE = initialize();
+
+export default function Quiz() {
+  const [question, setQuestion] = useState("");
+  const [answer, setAnswer] = useState("");
+  const [isAnswerVisible, setIsAnswerVisible] = useState(false);
+  const [points, setPoints] = useState(0);
+
+  const generateQuestion = () => {
+    const randomQuestion = QUESTIONNAIRE.question();
+    setQuestion(randomQuestion.question);
+    setAnswer(randomQuestion.answer);
+    setIsAnswerVisible(false);
+  };
+
+  const handleCorrectClick = () => {
+    setPoints((prev) => prev + 1);
+    generateQuestion();
+  };
+
+  const handleWrongClick = () => {
+    generateQuestion();
+  };
+
+  useEffect(() => {
+    generateQuestion();
+  }, []);
+
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.code === "Space" && !isAnswerVisible) {
+        setIsAnswerVisible(true);
+      }
+
+      if (event.code === "Enter" && isAnswerVisible) {
+        handleCorrectClick();
+      }
+
+      if (event.code === "Space" && isAnswerVisible) {
+        handleWrongClick();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyPress);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [isAnswerVisible]);
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+    <Container maxWidth="5xl">
+      <Text ml="30px" color="blue.300" fontWeight="bold">
+        Usmeno odgovorite na pitanje, prikažite odgovor i zatim označite jeste
+        li tačno ili netačno odgovorili.
+      </Text>
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+      <Card>
+        <CardHeader>
+          <Text>Poena: {points}</Text>
+        </CardHeader>
+        <CardBody>
+          <Text fontWeight="bold">{question}</Text>
+          <Flex justifyContent="center">
+            <Text>{isAnswerVisible && answer}</Text>
+          </Flex>
+        </CardBody>
+        <CardFooter>
+          <HStack>
+            {!isAnswerVisible ? (
+              <Button
+                onClick={() => {
+                  setIsAnswerVisible(true);
+                }}
+                tabIndex={0}
+              >
+                Prikaži odgovor
+              </Button>
+            ) : (
+              <>
+                <Button
+                  leftIcon={<CheckIcon />}
+                  bg="green.200"
+                  onClick={handleCorrectClick}
+                >
+                  Tačno odgovoreno
+                </Button>
+                <Button
+                  leftIcon={<CloseIcon />}
+                  bg="red.200"
+                  onClick={handleWrongClick}
+                >
+                  Netačno odgovoreno
+                </Button>
+              </>
+            )}
+          </HStack>
+        </CardFooter>
+      </Card>
+    </Container>
+  );
 }
