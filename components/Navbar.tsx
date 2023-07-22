@@ -8,20 +8,33 @@ import {
   Heading,
   Spacer,
   Text,
+  VStack,
+  Avatar,
 } from "@chakra-ui/react";
 
+import { useQuizContext } from "@/contexts/QuizContext";
+
 export default function Navbar() {
+  const { points } = useQuizContext();
   return (
-    <Flex as="nav" p="10px" alignItems="center">
-      <Heading as="h1">Ko zna - zna!</Heading>
-      <Spacer />
-      <HStack spacing="20px">
-        <Box bg="gray.200" p="10px">
-          A
-        </Box>
-        <Text>aleksa_95@msn.com</Text>
-        <Button colorScheme="purple">Logout</Button>
-      </HStack>
+    <Flex as="nav" alignItems="center" mb="10px">
+      {/* <Flex
+        alignItems="center"
+        gap="12px"
+        bg="green.500"
+        p="8px"
+        borderRadius="12px"
+      >
+        <Avatar bg="green.100" name="Aleksa Stojanovic" />
+        <Flex display="flex" flexDir="column">
+          <Text fontFamily="Overpass Mono" color="white">
+            Aleksa S.
+          </Text>
+          <Text fontWeight="bold" color="yellow.300" lineHeight={1}>
+            {points}
+          </Text>
+        </Flex>
+      </Flex> */}
     </Flex>
   );
 }
