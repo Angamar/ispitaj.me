@@ -10,14 +10,24 @@ import {
   Text,
   VStack,
   Avatar,
+  Switch,
 } from "@chakra-ui/react";
 
 import { useQuizContext } from "@/contexts/QuizContext";
 
 export default function Navbar() {
-  const { points } = useQuizContext();
+  const { isTimerEnabled, toggleTimer } = useQuizContext();
   return (
     <Flex as="nav" alignItems="center" mb="10px">
+      <VStack>
+        <Text>Timer</Text>
+        <Switch
+          colorScheme="green"
+          size="lg"
+          isChecked={isTimerEnabled}
+          onChange={toggleTimer}
+        />
+      </VStack>
       {/* <Flex
         alignItems="center"
         gap="12px"
