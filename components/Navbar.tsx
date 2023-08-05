@@ -9,42 +9,100 @@ import {
   Spacer,
   Text,
   VStack,
-  Avatar,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
   Switch,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
+  Checkbox,
+  IconButton,
 } from "@chakra-ui/react";
 
+import { SettingsIcon } from "@chakra-ui/icons";
 import { useQuizContext } from "@/contexts/QuizContext";
+import { useRef } from "react";
 
 export default function Navbar() {
-  const { isTimerEnabled, toggleTimer } = useQuizContext();
+  const { options } = useQuizContext();
+  const { isOpen, onOpen, onClose } = useDisclosure();
   return (
-    <Flex as="nav" alignItems="center" mb="10px">
-      <VStack>
-        <Text>Timer</Text>
-        <Switch
-          colorScheme="green"
-          size="lg"
-          isChecked={isTimerEnabled}
-          onChange={toggleTimer}
-        />
-      </VStack>
-      {/* <Flex
+    <>
+      <Flex
+        as="nav"
         alignItems="center"
-        gap="12px"
-        bg="green.500"
-        p="8px"
-        borderRadius="12px"
+        justifyContent="center"
+        mb="10px"
+        gap="30px"
       >
-        <Avatar bg="green.100" name="Aleksa Stojanovic" />
-        <Flex display="flex" flexDir="column">
-          <Text fontFamily="Overpass Mono" color="white">
-            Aleksa S.
-          </Text>
-          <Text fontWeight="bold" color="yellow.300" lineHeight={1}>
-            {points}
-          </Text>
-        </Flex>
-      </Flex> */}
-    </Flex>
+        <VStack></VStack>
+        <Heading>Ko zna - zna</Heading>
+        <IconButton
+          aria-label="Podešavanja"
+          onClick={onOpen}
+          icon={<SettingsIcon />}
+        />
+      </Flex>
+      <Modal isCentered isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Podešavanja: Ko zna - zna</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Flex flexDir="column" alignItems="flex-start" gap="30px">
+              <VStack align="flex-start">
+                <Text>Ukupan broj pitanja</Text>
+                <NumberInput
+                  onChange={(string, number) =>
+                    options.setNumberOfQuestions(number)
+                  }
+                  defaultValue={10}
+                  min={5}
+                  max={100}
+                >
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+              </VStack>
+              <VStack align="flex-start">
+                <Text>Tajmer</Text>
+                <Switch
+                  colorScheme="green"
+                  size="lg"
+                  isChecked={options.isTimerEnabled}
+                  onChange={options.toggleTimer}
+                />
+                <Checkbox
+                  mt="10px"
+                  isDisabled={!options.isTimerEnabled}
+                  isChecked={options.isAnswerOnTimeoutShown}
+                  onChange={options.toggleAnswerShownOnTimeout}
+                >
+                  Prikaži odgovor na isteku vremena
+                </Checkbox>
+              </VStack>
+            </Flex>
+          </ModalBody>
+
+          <ModalFooter>
+            {/* <Button variant="ghost">Secondary Action</Button> */}
+            <Button colorScheme="blue" mr={3} onClick={onClose}>
+              Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
   );
 }

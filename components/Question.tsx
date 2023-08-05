@@ -20,32 +20,34 @@ import {
 
 import { CheckIcon, CloseIcon, ArrowRightIcon } from "@chakra-ui/icons";
 
-const Question = () => {
+interface QuestionProps {
+  handleGameOver: () => void;
+}
+
+const Question = ({ handleGameOver }: QuestionProps) => {
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
-  const {
-    setPoints,
-    restartTimer,
-    seconds,
-    setSeconds,
-    points,
-    isTimerEnabled,
-  } = useQuizContext();
+  const { setPoints, restartTimer, seconds, setSeconds, options } =
+    useQuizContext();
   const [isAnswerVisible, setIsAnswerVisible] = useState(false);
   const [questionNumber, setQuestionNumber] = useState(0);
   const QUESTIONNAIRE = initialize();
 
   const generateQuestion = () => {
     setQuestionNumber((prev) => prev + 1);
+    if (questionNumber >= options.numberOfQuestions) {
+      handleGameOver();
+      return;
+    }
     const randomQuestion = QUESTIONNAIRE.question();
     setQuestion(randomQuestion.question);
     setAnswer(randomQuestion.answer);
     setIsAnswerVisible(false);
-    isTimerEnabled && restartTimer();
+    options.isTimerEnabled && restartTimer();
   };
 
   const handleShowAnswer = () => {
-    isTimerEnabled && setSeconds(0);
+    options.isTimerEnabled && setSeconds(0);
     setIsAnswerVisible(true);
   };
 
@@ -68,10 +70,14 @@ const Question = () => {
   }, []);
 
   useEffect(() => {
-    if (isTimerEnabled && seconds === 0) {
+    if (
+      options.isTimerEnabled &&
+      options.isAnswerOnTimeoutShown &&
+      seconds === 0
+    ) {
       setIsAnswerVisible(true);
     }
-  }, [seconds, isTimerEnabled]);
+  }, [seconds, options.isTimerEnabled]);
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -95,73 +101,67 @@ const Question = () => {
     };
   }, [isAnswerVisible]);
 
-  return (
-    <Card borderRadius="2xl" w="100%" maxWidth="1000px">
-      <CardBody>
-        <Stack divider={<StackDivider />} spacing="4">
-          <Box>
-            <Text
-              size="xs"
-              mb="2"
-              textTransform="uppercase"
-              fontFamily="Overpass Mono"
-              color="green.500"
-            >
-              Pitanje broj {questionNumber}
-            </Text>
-            <Heading fontSize="2xl" pr={{ base: "0px", md: "60px" }}>
-              {question}
-            </Heading>
-          </Box>
-          <Box>
-            <Text fontSize="l" fontFamily="Overpass Mono">
-              {isAnswerVisible && answer}
-            </Text>
-          </Box>
-        </Stack>
-      </CardBody>
-      <CardFooter>
-        <Stack direction={["column", "row"]}>
-          {!isAnswerVisible ? (
-            <Button
-              onClick={handleShowAnswer}
-              tabIndex={0}
-              fontFamily="Overpass Mono"
-            >
-              Prikaži odgovor
-            </Button>
-          ) : (
-            <>
-              <Button
-                leftIcon={<CheckIcon />}
-                onClick={handleCorrectClick}
-                colorScheme="green"
+  if (questionNumber <= options.numberOfQuestions)
+    return (
+      <Card borderRadius="2xl" w="100%" maxWidth="1000px">
+        <CardBody>
+          <Stack divider={<StackDivider />} spacing="4">
+            <Box>
+              <Text
+                size="xs"
+                mb="2"
+                textTransform="uppercase"
                 fontFamily="Overpass Mono"
+                color="green.500"
               >
-                Tačno odgovoreno
+                Pitanje broj {questionNumber}
+              </Text>
+              <Heading fontSize="2xl" pr={{ base: "0px", md: "60px" }}>
+                {question}
+              </Heading>
+            </Box>
+            <Box>
+              <Text fontSize="l" fontFamily="Overpass Mono">
+                {isAnswerVisible && answer}
+              </Text>
+            </Box>
+          </Stack>
+        </CardBody>
+        <CardFooter>
+          <Stack direction={["column", "row"]}>
+            {!isAnswerVisible ? (
+              <Button onClick={handleShowAnswer} tabIndex={0}>
+                Prikaži odgovor
               </Button>
-              <Button
-                leftIcon={<CloseIcon />}
-                onClick={handleWrongClick}
-                colorScheme="red"
-                fontFamily="Overpass Mono"
-              >
-                Netačno odgovoreno
-              </Button>
-              <Button
-                leftIcon={<ArrowRightIcon />}
-                onClick={handleSkipClick}
-                colorScheme="gray"
-                fontFamily="Overpass Mono"
-              >
-                Bez odgovora
-              </Button>
-            </>
-          )}
-        </Stack>
-      </CardFooter>
-    </Card>
-  );
+            ) : (
+              <>
+                <Button
+                  leftIcon={<CheckIcon />}
+                  onClick={handleCorrectClick}
+                  colorScheme="green"
+                >
+                  Tačno odgovoreno
+                </Button>
+                <Button
+                  leftIcon={<CloseIcon />}
+                  onClick={handleWrongClick}
+                  colorScheme="red"
+                >
+                  Netačno odgovoreno
+                </Button>
+                <Button
+                  leftIcon={<ArrowRightIcon />}
+                  onClick={handleSkipClick}
+                  colorScheme="gray"
+                >
+                  Bez odgovora
+                </Button>
+              </>
+            )}
+          </Stack>
+        </CardFooter>
+      </Card>
+    );
 };
 
 export default Question;

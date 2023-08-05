@@ -5,11 +5,12 @@ import { CacheProvider } from "@chakra-ui/next-js";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import { QuizProvider } from "@/contexts/QuizContext";
 import "@fontsource/overpass-mono/700.css";
+import "@fontsource-variable/overpass";
 
 const theme = extendTheme({
   fonts: {
     heading: `'Overpass Mono', sans-serif`,
-    text: `'Overpass Mono', sans-serif`,
+    body: `'Overpass Variable', sans-serif`,
   },
   colors: {
     green: {

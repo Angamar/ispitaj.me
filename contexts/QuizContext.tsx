@@ -2,14 +2,25 @@
 
 import { createContext, useState, useContext, ReactNode } from "react";
 
+type QuizOptions = {
+  isAnswerOnTimeoutShown: boolean;
+  isTimerEnabled: boolean;
+  numberOfQuestions: number;
+  toggleTimer: () => void;
+  toggleAnswerShownOnTimeout: () => void;
+  setNumberOfQuestions: (value: number) => void;
+};
+
 interface QuizContextData {
   points: number;
   seconds: number;
-  isTimerEnabled: boolean;
+  isGameOver: boolean;
   setPoints: React.Dispatch<React.SetStateAction<number>>;
   setSeconds: React.Dispatch<React.SetStateAction<number>>;
+  setIsGameOver: React.Dispatch<React.SetStateAction<boolean>>;
   restartTimer: () => void;
-  toggleTimer: () => void;
+  restartGame: () => void;
+  options: QuizOptions;
 }
 
 const QuizContext = createContext<QuizContextData | null>(null);
@@ -29,14 +40,41 @@ interface QuizProviderProps {
 export function QuizProvider({ children }: QuizProviderProps) {
   const [points, setPoints] = useState(0);
   const [seconds, setSeconds] = useState(8);
-  const [isTimerEnabled, setIsTimerEnabled] = useState(true);
+  const [isGameOver, setIsGameOver] = useState(true);
+  const [options, setOptions] = useState({
+    numberOfQuestions: 10,
+    isTimerEnabled: true,
+    isAnswerOnTimeoutShown: true,
+    toggleTimer,
+    toggleAnswerShownOnTimeout,
+    setNumberOfQuestions,
+  });
 
   const restartTimer = () => {
     setSeconds(8);
   };
 
-  const toggleTimer = () => {
-    setIsTimerEnabled((prev) => !prev);
+  function toggleTimer() {
+    setOptions((prevOptions) => ({
+      ...prevOptions,
+      isTimerEnabled: !prevOptions.isTimerEnabled,
+    }));
+  }
+
+  function toggleAnswerShownOnTimeout() {
+    setOptions((prevOptions) => ({
+      ...prevOptions,
+      isAnswerOnTimeoutShown: !prevOptions.isAnswerOnTimeoutShown,
+    }));
+  }
+
+  function setNumberOfQuestions(value: number) {
+    setOptions({ ...options, numberOfQuestions: value });
+  }
+
+  const restartGame = () => {
+    setPoints(0);
+    setIsGameOver(false);
   };
 
   return (
@@ -47,8 +85,10 @@ export function QuizProvider({ children }: QuizProviderProps) {
         seconds,
         setSeconds,
         restartTimer,
-        toggleTimer,
-        isTimerEnabled,
+        options,
+        isGameOver,
+        setIsGameOver,
+        restartGame,
       }}
     >
       {children}

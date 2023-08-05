@@ -2,10 +2,10 @@ import { Progress } from "@chakra-ui/react";
 import React, { useState, useEffect } from "react";
 import { useQuizContext } from "@/contexts/QuizContext";
 const Timer = () => {
-  const { seconds, setSeconds, isTimerEnabled } = useQuizContext();
+  const { seconds, setSeconds, options } = useQuizContext();
 
   useEffect(() => {
-    if (seconds > 0 && isTimerEnabled) {
+    if (seconds > 0 && options.isTimerEnabled) {
       const intervalId = setInterval(() => {
         setSeconds((prevSeconds) => prevSeconds - 1);
       }, 1000);
@@ -13,10 +13,10 @@ const Timer = () => {
       // Clean up the interval when the component unmounts
       return () => clearInterval(intervalId);
     }
-  }, [seconds, isTimerEnabled]);
+  }, [seconds, options.isTimerEnabled]);
 
   // Render the timer
-  if (isTimerEnabled)
+  if (options.isTimerEnabled)
     return (
       <Progress
         colorScheme="orange"
