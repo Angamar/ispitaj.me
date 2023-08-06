@@ -64,7 +64,7 @@ export default function Navbar() {
                   onChange={(string, number) =>
                     options.setNumberOfQuestions(number)
                   }
-                  defaultValue={10}
+                  defaultValue={options.numberOfQuestions}
                   min={5}
                   max={100}
                 >
