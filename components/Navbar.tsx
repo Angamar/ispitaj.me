@@ -44,65 +44,8 @@ export default function Navbar() {
         gap="30px"
       >
         <VStack></VStack>
-        <Heading>Ko zna - zna</Heading>
-        <IconButton
-          aria-label="Podešavanja"
-          onClick={onOpen}
-          icon={<SettingsIcon />}
-        />
+        <Heading>Ispitaj.me</Heading>
       </Flex>
-      <Modal isCentered isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Podešavanja: Ko zna - zna</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Flex flexDir="column" alignItems="flex-start" gap="30px">
-              <VStack align="flex-start">
-                <Text>Ukupan broj pitanja</Text>
-                <NumberInput
-                  onChange={(string, number) =>
-                    options.setNumberOfQuestions(number)
-                  }
-                  defaultValue={options.numberOfQuestions}
-                  min={5}
-                  max={100}
-                >
-                  <NumberInputField />
-                  <NumberInputStepper>
-                    <NumberIncrementStepper />
-                    <NumberDecrementStepper />
-                  </NumberInputStepper>
-                </NumberInput>
-              </VStack>
-              <VStack align="flex-start">
-                <Text>Tajmer</Text>
-                <Switch
-                  colorScheme="green"
-                  size="lg"
-                  isChecked={options.isTimerEnabled}
-                  onChange={options.toggleTimer}
-                />
-                <Checkbox
-                  mt="10px"
-                  isDisabled={!options.isTimerEnabled}
-                  isChecked={options.isAnswerOnTimeoutShown}
-                  onChange={options.toggleAnswerShownOnTimeout}
-                >
-                  Prikaži odgovor na isteku vremena
-                </Checkbox>
-              </VStack>
-            </Flex>
-          </ModalBody>
-
-          <ModalFooter>
-            {/* <Button variant="ghost">Secondary Action</Button> */}
-            <Button colorScheme="blue" mr={3} onClick={onClose}>
-              Close
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
     </>
   );
 }
