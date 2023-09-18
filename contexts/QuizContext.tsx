@@ -1,6 +1,14 @@
 // contexts/QuizContext.ts
 
-import { createContext, useState, useContext, ReactNode } from "react";
+import {
+  createContext,
+  useState,
+  useContext,
+  ReactNode,
+  Dispatch,
+  SetStateAction,
+} from "react";
+import { usePathname } from "next/navigation";
 
 type QuizOptions = {
   isAnswerOnTimeoutShown: boolean;
@@ -12,13 +20,15 @@ type QuizOptions = {
 };
 
 interface QuizContextData {
+  playerName: string;
   points: number;
   seconds: number;
   isGameOver: boolean;
-  setPoints: React.Dispatch<React.SetStateAction<number>>;
-  setSeconds: React.Dispatch<React.SetStateAction<number>>;
-  setIsGameOver: React.Dispatch<React.SetStateAction<boolean>>;
-  restartTimer: () => void;
+  setPlayerName: Dispatch<SetStateAction<string>>;
+  setPoints: Dispatch<SetStateAction<number>>;
+  setSeconds: Dispatch<SetStateAction<number>>;
+  setIsGameOver: Dispatch<SetStateAction<boolean>>;
+  restartTimer: (sec: number) => void;
   restartGame: () => void;
   options: QuizOptions;
 }
@@ -38,6 +48,8 @@ interface QuizProviderProps {
 }
 
 export function QuizProvider({ children }: QuizProviderProps) {
+  const pathname = usePathname();
+  const [playerName, setPlayerName] = useState("Igrač 1");
   const [points, setPoints] = useState(0);
   const [seconds, setSeconds] = useState(8);
   const [isGameOver, setIsGameOver] = useState(true);
@@ -50,8 +62,8 @@ export function QuizProvider({ children }: QuizProviderProps) {
     setNumberOfQuestions,
   });
 
-  const restartTimer = () => {
-    setSeconds(8);
+  const restartTimer = (sec: number) => {
+    setSeconds(sec);
   };
 
   function toggleTimer() {
@@ -75,6 +87,8 @@ export function QuizProvider({ children }: QuizProviderProps) {
   const restartGame = () => {
     setPoints(0);
     setIsGameOver(false);
+    pathname === "/potera" && restartTimer(30);
+    pathname === "/ko-zna-zna" && restartTimer(8);
   };
 
   return (
@@ -83,6 +97,8 @@ export function QuizProvider({ children }: QuizProviderProps) {
         points,
         setPoints,
         seconds,
+        playerName,
+        setPlayerName,
         setSeconds,
         restartTimer,
         options,

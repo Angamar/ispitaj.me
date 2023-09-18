@@ -1,28 +1,9 @@
 "use client";
 
-import {
-  Card,
-  Image,
-  Stack,
-  CardBody,
-  Heading,
-  Text,
-  CardFooter,
-  Button,
-  Link,
-  IconButton,
-  useDisclosure,
-  Spacer,
-  VStack,
-} from "@chakra-ui/react";
+import { Button, useDisclosure, Spacer, VStack } from "@chakra-ui/react";
 
-import SettingsModal from "@/components/SettingsModal";
 import GameModeCard from "@/components/GameModeCard";
 import PlayerModal from "@/components/PlayerModal";
-
-import { SettingsIcon } from "@chakra-ui/icons";
-
-import NextLink from "next/link";
 
 export default function Quiz() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -32,7 +13,7 @@ export default function Quiz() {
       <Spacer />
       <VStack gap="40px">
         <Button size="lg" w="100%" onClick={onOpen}>
-          Dodaj igrača
+          Izmeni ime igrača
         </Button>
         <GameModeCard
           name="Ko zna - zna"

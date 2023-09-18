@@ -16,20 +16,15 @@ import {
   Heading,
   CardFooter,
   Button,
-  Spacer,
-  HStack,
 } from "@chakra-ui/react";
-
-import Link from "next/link";
 
 import { CheckIcon, CloseIcon, ArrowRightIcon } from "@chakra-ui/icons";
 
 interface QuestionProps {
   handleGameOver: () => void;
-  gameMode: "classic" | "time attack";
 }
 
-const Question = ({ handleGameOver, gameMode }: QuestionProps) => {
+const Question = ({ handleGameOver }: QuestionProps) => {
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
   const { setPoints, restartTimer, seconds, setSeconds, options } =
@@ -40,20 +35,19 @@ const Question = ({ handleGameOver, gameMode }: QuestionProps) => {
 
   const generateQuestion = () => {
     setQuestionNumber((prev) => prev + 1);
-    if (gameMode === "classic" && questionNumber >= options.numberOfQuestions) {
+    if (questionNumber >= options.numberOfQuestions) {
       handleGameOver();
       return;
     }
-
     const randomQuestion = QUESTIONNAIRE.question();
     setQuestion(randomQuestion.question);
     setAnswer(randomQuestion.answer);
     setIsAnswerVisible(false);
-    options.isTimerEnabled && gameMode === "classic" && restartTimer(8);
+    options.isTimerEnabled && restartTimer(8);
   };
 
   const handleShowAnswer = () => {
-    options.isTimerEnabled && gameMode === "classic" && setSeconds(0);
+    options.isTimerEnabled && setSeconds(0);
     setIsAnswerVisible(true);
   };
 
@@ -83,11 +77,6 @@ const Question = ({ handleGameOver, gameMode }: QuestionProps) => {
     ) {
       setIsAnswerVisible(true);
     }
-
-    if (gameMode === "time attack" && seconds === 0) {
-      handleGameOver();
-      return;
-    }
   }, [seconds, options.isTimerEnabled]);
 
   useEffect(() => {
@@ -112,30 +101,21 @@ const Question = ({ handleGameOver, gameMode }: QuestionProps) => {
     };
   }, [isAnswerVisible]);
 
-  if (questionNumber <= options.numberOfQuestions || gameMode === "time attack")
+  if (questionNumber <= options.numberOfQuestions)
     return (
       <Card borderRadius="2xl" w="100%" maxWidth="1000px">
         <CardBody>
           <Stack divider={<StackDivider />} spacing="4">
             <Box>
-              <HStack>
-                <Text
-                  size="xs"
-                  mb="2"
-                  textTransform="uppercase"
-                  fontFamily="Overpass Mono"
-                  color="green.500"
-                >
-                  Pitanje broj {questionNumber}
-                </Text>
-
-                <Spacer />
-                <Link href="/">
-                  <Button mb="2" size="xs" colorScheme="gray">
-                    <CloseIcon />
-                  </Button>
-                </Link>
-              </HStack>
+              <Text
+                size="xs"
+                mb="2"
+                textTransform="uppercase"
+                fontFamily="Overpass Mono"
+                color="green.500"
+              >
+                Pitanje broj {questionNumber}
+              </Text>
               <Heading fontSize="2xl" pr={{ base: "0px", md: "60px" }}>
                 {question}
               </Heading>

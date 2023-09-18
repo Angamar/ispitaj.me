@@ -12,7 +12,6 @@ import {
   Link,
   IconButton,
   useDisclosure,
-  Spacer,
 } from "@chakra-ui/react";
 
 import SettingsModal from "@/components/SettingsModal";

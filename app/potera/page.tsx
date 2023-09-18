@@ -2,7 +2,7 @@
 
 import { Box } from "@chakra-ui/react";
 
-import Timer from "@/components/Timer";
+import TimeAttackTimer from "@/components/TimeAttackTimer";
 import Question from "@/components/Question";
 import Player from "@/components/Player";
 import { useQuizContext } from "@/contexts/QuizContext";
@@ -10,8 +10,10 @@ import { useDisclosure, Spacer } from "@chakra-ui/react";
 import { useEffect } from "react";
 import GameOverModal from "@/components/GameOverModal";
 
-export default function Quiz() {
-  const { restartGame, setIsGameOver, isGameOver } = useQuizContext();
+export default function TimeAttack() {
+  const { restartGame, restartTimer, setIsGameOver, isGameOver } =
+    useQuizContext();
+
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleGameOver = () => {
@@ -21,15 +23,16 @@ export default function Quiz() {
 
   useEffect(() => {
     restartGame();
+    restartTimer(30);
   }, []);
 
   if (!isGameOver)
     return (
       <>
         <Spacer />
-        <Box>
-          <Timer />
-          <Question gameMode="classic" handleGameOver={handleGameOver} />
+        <Box display="flex" flexDirection="column" alignItems="center">
+          <TimeAttackTimer />
+          <Question gameMode="time attack" handleGameOver={handleGameOver} />
         </Box>
         <Spacer />
 

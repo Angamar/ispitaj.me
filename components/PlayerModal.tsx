@@ -6,7 +6,6 @@ import {
   Text,
   VStack,
   Input,
-  Switch,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -14,8 +13,9 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-  Checkbox,
 } from "@chakra-ui/react";
+
+import { useState, ChangeEvent } from "react";
 
 interface PlayerModal {
   isOpen: boolean;
@@ -25,7 +25,16 @@ interface PlayerModal {
 import { useQuizContext } from "@/contexts/QuizContext";
 
 export default function PlayerModal({ isOpen, onClose }: PlayerModal) {
-  const { options } = useQuizContext();
+  const { setPlayerName } = useQuizContext();
+  const [name, setName] = useState("");
+
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) =>
+    setName(event.target.value);
+
+  const changePlayerName = () => {
+    setPlayerName(name);
+    onClose();
+  };
   return (
     <Modal isCentered isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
@@ -36,13 +45,13 @@ export default function PlayerModal({ isOpen, onClose }: PlayerModal) {
           <Flex flexDir="column" alignItems="flex-start" gap="30px">
             <VStack align="flex-start">
               <Text>Ime igrača:</Text>
-              <Input placeholder="Upiši ime" />
+              <Input placeholder="Upiši ime" onChange={handleChange} />
             </VStack>
           </Flex>
         </ModalBody>
 
         <ModalFooter>
-          <Button colorScheme="blue" mr={3} onClick={onClose}>
+          <Button colorScheme="blue" mr={3} onClick={changePlayerName}>
             Dodaj
           </Button>
         </ModalFooter>
