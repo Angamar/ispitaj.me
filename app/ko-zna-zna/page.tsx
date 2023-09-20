@@ -27,12 +27,12 @@ export default function Quiz() {
     return (
       <>
         <Spacer />
+        TEST-BRANCH-2-CODE
         <Box>
           <Timer />
           <Question gameMode="classic" handleGameOver={handleGameOver} />
         </Box>
         <Spacer />
-
         <Player />
       </>
     );
