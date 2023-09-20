@@ -27,7 +27,7 @@ export default function Quiz() {
     return (
       <>
         <Spacer />
-        TEST-BRANCH-2-CODE
+        HAHA HOHO XEXE
         <Box>
           <Timer />
           <Question gameMode="classic" handleGameOver={handleGameOver} />
