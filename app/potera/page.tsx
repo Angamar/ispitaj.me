@@ -30,12 +30,12 @@ export default function TimeAttack() {
     return (
       <>
         <Spacer />
+        Kad te potera
         <Box display="flex" flexDirection="column" alignItems="center">
           <TimeAttackTimer />
           <Question gameMode="time attack" handleGameOver={handleGameOver} />
         </Box>
         <Spacer />
-
         <Player />
       </>
     );
