@@ -28,11 +28,11 @@ export default function Quiz() {
       <>
         <Spacer />
         <Box>
+          ko-zna-zna
           <Timer />
           <Question gameMode="classic" handleGameOver={handleGameOver} />
         </Box>
         <Spacer />
-
         <Player />
       </>
     );
