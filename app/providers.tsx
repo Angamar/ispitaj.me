@@ -6,6 +6,7 @@ import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import { QuizProvider } from "@/contexts/QuizContext";
 import "@fontsource/overpass-mono/700.css";
 import "@fontsource-variable/overpass";
+import { useEffect } from "react";
 declare global {
   interface Window {
     appReady: boolean;
@@ -27,9 +28,12 @@ const theme = extendTheme({
 });
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  if (window.Cypress) {
-    window.appReady = true;
-  }
+  useEffect(() => {
+    if (window.Cypress) {
+      window.appReady = true;
+    }
+  }, []);
+
   return (
     <QuizProvider>
       <CacheProvider>

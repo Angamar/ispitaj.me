@@ -16,16 +16,14 @@ jobs:
           start:
             npm start
             # after the test run completes store videos and any screenshots
-      - name: Failed tests screenshots
-        uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v3
         # add the line below to store screenshots only on failures
-        if: failure()
+        # if: failure()
         with:
           name: cypress-screenshots
           path: cypress/screenshots
           if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
-      - name: Failed tests videos
-        uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v3
         with:
           name: cypress-videos
           path: cypress/videos
