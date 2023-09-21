@@ -5,6 +5,7 @@ describe("Navigation", () => {
 
     // Find a link with an href attribute containing "about" and click it
     cy.get('a[href*="/ko-zna-zna"]').click();
+    cy.wait(200);
 
     // The new url should include "/about"
     cy.url().should("include", "/ko-zna-zna");
