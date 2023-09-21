@@ -6,8 +6,8 @@ export default defineConfig({
       // implement node event listeners here
     },
     excludeSpecPattern: [
-      "e2e/1-getting-started/**",
-      "e2e/2-advanced-examples/**",
+      "cypress/e2e/1-getting-started/**",
+      "cypress/e2e/2-advanced-examples/**",
     ],
   },
 });
