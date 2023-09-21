@@ -14,7 +14,12 @@
 // ***********************************************************
 
 // Import commands.js using ES2015 syntax:
-import './commands'
+import "./commands";
+
+beforeEach(() => {
+  cy.visit("localhost:3000/");
+  cy.window().should("have.property", "appReady", true);
+});
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
