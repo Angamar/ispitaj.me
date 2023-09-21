@@ -1,7 +1,7 @@
 describe("Navigation", () => {
   it("should navigate to Ko zna zna game mode", () => {
     // Start from the index page
-    cy.visit("/");
+    cy.visit("http://localhost:3000");
 
     // Find a link with an href attribute containing "about" and click it
     cy.get('a[href*="/ko-zna-zna"]').click();
