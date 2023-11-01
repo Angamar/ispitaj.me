@@ -4,22 +4,18 @@ import {
   Flex,
   Avatar,
   Text,
-  Box,
   IconButton,
   PopoverTrigger,
   Popover,
-  Button,
   PopoverContent,
   PopoverArrow,
-  PopoverHeader,
   PopoverBody,
-  PopoverCloseButton,
   Badge,
   HStack,
   VStack,
 } from "@chakra-ui/react";
-import { CheckIcon } from "@chakra-ui/icons";
 import { MdEmojiPeople } from "react-icons/md";
+import { ArrowRightIcon, ViewIcon } from "@chakra-ui/icons";
 
 import { useQuizContext } from "@/contexts/QuizContext";
 
@@ -28,6 +24,19 @@ import Timer from "./Timer";
 
 interface BuzzInButton {
   onBuzzIn: () => void;
+  seconds: number;
+}
+
+interface NextQuestionButton {
+  handleNextQuestion: () => void;
+}
+
+interface ShowAnswerButton {
+  handleShowAnswer: () => void;
+}
+
+interface Player {
+  restartTimer: () => void;
   seconds: number;
 }
 
@@ -55,39 +64,132 @@ const BuzzInButton = ({ onBuzzIn, seconds }: BuzzInButton) => {
   );
 };
 
-const AnsweringTurnNumber = () => {
-  return <Avatar name="1" bg="orange" />;
+const NextQuestionButton = ({ handleNextQuestion }: NextQuestionButton) => {
+  return (
+    <Popover trigger="hover">
+      <PopoverTrigger>
+        <IconButton
+          onClick={handleNextQuestion}
+          isRound={true}
+          variant="solid"
+          colorScheme="gray"
+          aria-label="Done"
+          fontSize="18px"
+          size="lg"
+          icon={<ArrowRightIcon />}
+        />
+      </PopoverTrigger>
+      <PopoverContent w="auto">
+        <PopoverArrow />
+        <PopoverBody>Javi se</PopoverBody>
+      </PopoverContent>
+    </Popover>
+  );
 };
 
-const Player = () => {
-  const { points, playerName, seconds, answerSeconds, setAnswerSeconds } =
-    useQuizContext();
-  const [playerStatus, setPlayerStatus] = useState<
-    "not buzzed in" | "buzzed in" | "answering" | "verifying answer"
-  >("not buzzed in");
+const ShowAnswerButton = ({ handleShowAnswer }: ShowAnswerButton) => {
+  return (
+    <Popover trigger="hover">
+      <PopoverTrigger>
+        <IconButton
+          onClick={handleShowAnswer}
+          isRound={true}
+          variant="solid"
+          colorScheme="purple"
+          aria-label="Done"
+          fontSize="18px"
+          size="lg"
+          icon={<ViewIcon />}
+        />
+      </PopoverTrigger>
+      <PopoverContent w="auto">
+        <PopoverArrow />
+        <PopoverBody>Prikaži odgovor</PopoverBody>
+      </PopoverContent>
+    </Popover>
+  );
+};
 
-  const handleBuzzIn = () => {
-    setPlayerStatus("buzzed in");
+const Player = ({ restartTimer, seconds }: Player) => {
+  const {
+    points,
+    playerName,
+    generateQuestion: nextQuestion,
+    playerStatus,
+    changePlayerStatus,
+    options,
+    setIsAnswerVisible,
+  } = useQuizContext();
+  const [answerSeconds, setAnswerSeconds] = useState(3);
+
+  const renderButton = () => {
+    if (options.isTimerEnabled && seconds > 0 && playerStatus == "waiting") {
+      return <BuzzInButton seconds={seconds} onBuzzIn={handleBuzzIn} />;
+    }
+
+    if (playerStatus === "buzzed in" || playerStatus === "answering") {
+      return <Avatar name="1" bg="orange" />;
+    }
+
+    if (!options.isTimerEnabled) {
+      return <ShowAnswerButton handleShowAnswer={handleShowAnswer} />;
+    }
+
+    if (!options.isAnswerOnTimeoutShown && answerSeconds <= 0) {
+      return <ShowAnswerButton handleShowAnswer={handleShowAnswer} />;
+    }
+
+    if (options.isTimerEnabled && seconds <= 0) {
+      return <NextQuestionButton handleNextQuestion={handleNextQuestion} />;
+    }
   };
 
-  const handleAnswerVerified = () => {
-    setPlayerStatus("not buzzed in");
+  const handleBuzzIn = () => {
+    changePlayerStatus("buzzed in");
+  };
+
+  const handleNextQuestion = () => {
+    changePlayerStatus("waiting");
+    restartTimer();
+    nextQuestion();
+  };
+
+  const handleAnswerChecked = () => {
+    changePlayerStatus("waiting");
+    restartTimer();
+  };
+
+  const handleShowAnswer = () => {
+    setIsAnswerVisible(true);
+    changePlayerStatus("checking answer");
   };
 
   useEffect(() => {
+    console.log(playerStatus);
+  }, []);
+
+  useEffect(() => {
     if (seconds <= 0 && playerStatus === "buzzed in") {
-      setPlayerStatus("answering");
+      changePlayerStatus("answering");
     }
   }, [seconds]);
 
   useEffect(() => {
+    if (answerSeconds > 0 && playerStatus === "answering") {
+      const intervalId = setInterval(() => {
+        setAnswerSeconds((prevSeconds) => prevSeconds - 1 / 20);
+      }, 50);
+
+      // Clean up the interval when the component unmounts
+      return () => clearInterval(intervalId);
+    }
     if (answerSeconds <= 0 && playerStatus === "answering") {
-      setPlayerStatus("verifying answer");
+      changePlayerStatus("checking answer");
       setAnswerSeconds(3);
     }
-  }, [answerSeconds]);
+  }, [answerSeconds, playerStatus]);
 
-  if (playerStatus !== "verifying answer") {
+  if (playerStatus !== "checking answer") {
     return (
       <VStack>
         <Flex
@@ -99,12 +201,7 @@ const Player = () => {
           borderRadius="2xl"
           // w="20%"
         >
-          {playerStatus === "not buzzed in" && (
-            <BuzzInButton seconds={seconds} onBuzzIn={handleBuzzIn} />
-          )}
-          {playerStatus !== "not buzzed in" && <AnsweringTurnNumber />}
-
-          {/* <Avatar bg="green.100" name={playerName} /> */}
+          {renderButton()}
           <Flex display="flex" flexDir="column">
             <HStack>
               <Text fontFamily="Overpass Mono" color="white">
@@ -119,11 +216,13 @@ const Player = () => {
             </Text>
           </Flex>
         </Flex>
-        {playerStatus === "answering" && <Timer type="answer" />}
+        {playerStatus === "answering" && (
+          <Timer seconds={answerSeconds} type="answer" />
+        )}
       </VStack>
     );
   } else {
-    return <Answer handleAnswerVerified={handleAnswerVerified} />;
+    return <Answer handleAnswerChecked={handleAnswerChecked} />;
   }
 };
 

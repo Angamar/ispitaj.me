@@ -21,6 +21,8 @@ type QuizOptions = {
   setNumberOfQuestions: (value: number) => void;
 };
 
+type PlayerStatus = "waiting" | "buzzed in" | "answering" | "checking answer";
+
 interface QuizContextData {
   gameMode: "classic" | "time attack";
   questionNumber: number;
@@ -32,6 +34,8 @@ interface QuizContextData {
   seconds: number;
   answerSeconds: number;
   isGameOver: boolean;
+  playerStatus: PlayerStatus;
+  changePlayerStatus: (status: PlayerStatus) => void;
   setGameMode: Dispatch<SetStateAction<"classic" | "time attack">>;
   setPlayerName: Dispatch<SetStateAction<string>>;
   setIsAnswerVisible: Dispatch<SetStateAction<boolean>>;
@@ -39,7 +43,6 @@ interface QuizContextData {
   setSeconds: Dispatch<SetStateAction<number>>;
   setAnswerSeconds: Dispatch<SetStateAction<number>>;
   setIsGameOver: Dispatch<SetStateAction<boolean>>;
-  restartClassicTimer: (sec: number) => void;
   restartGame: () => void;
   generateQuestion: () => void;
   options: QuizOptions;
@@ -66,6 +69,7 @@ export function QuizProvider({ children }: QuizProviderProps) {
     "classic"
   );
   const [playerName, setPlayerName] = useState("Igrač 1");
+  const [playerStatus, setPlayerStatus] = useState<PlayerStatus>("waiting");
   const [questionNumber, setQuestionNumber] = useState(1);
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
@@ -83,17 +87,12 @@ export function QuizProvider({ children }: QuizProviderProps) {
     setNumberOfQuestions,
   });
 
-  const restartClassicTimer = (sec: number) => {
-    setSeconds(sec);
-  };
-
   const generateQuestion = () => {
     setIsAnswerVisible(false);
     setQuestionNumber((prev) => prev + 1);
     const randomQuestion = QUESTIONNAIRE.question();
     setQuestion(randomQuestion.question);
     setAnswer(randomQuestion.answer);
-    options.isTimerEnabled && gameMode === "classic" && restartClassicTimer(8);
   };
 
   function toggleTimer() {
@@ -110,16 +109,20 @@ export function QuizProvider({ children }: QuizProviderProps) {
     }));
   }
 
+  const changePlayerStatus = (status: PlayerStatus) => {
+    setPlayerStatus(status);
+  };
+
   function setNumberOfQuestions(value: number) {
     setOptions({ ...options, numberOfQuestions: value });
   }
 
   const restartGame = () => {
     setQuestionNumber(0);
+    setPlayerStatus("waiting");
     setIsAnswerVisible(false);
     setPoints(0);
     setIsGameOver(false);
-    restartClassicTimer(8);
   };
 
   return (
@@ -128,6 +131,7 @@ export function QuizProvider({ children }: QuizProviderProps) {
         gameMode,
         setGameMode,
         questionNumber,
+        playerStatus,
         question,
         answer,
         isAnswerVisible,
@@ -137,10 +141,10 @@ export function QuizProvider({ children }: QuizProviderProps) {
         seconds,
         answerSeconds,
         playerName,
+        changePlayerStatus,
         setPlayerName,
         setSeconds,
         setAnswerSeconds,
-        restartClassicTimer,
         options,
         isGameOver,
         setIsGameOver,

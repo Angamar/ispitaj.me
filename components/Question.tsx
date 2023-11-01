@@ -21,22 +21,34 @@ import Link from "next/link";
 import { CloseIcon } from "@chakra-ui/icons";
 import Answer from "./Answer";
 
-const Question = () => {
+interface Question {
+  seconds: number;
+}
+
+const Question = ({ seconds }: Question) => {
   const {
     generateQuestion,
     question,
     answer,
     questionNumber,
     isAnswerVisible,
-    seconds,
     setIsAnswerVisible,
     gameMode,
     options,
+    playerStatus,
   } = useQuizContext();
 
   useEffect(() => {
     generateQuestion();
   }, []);
+
+  const isShowAnswerButtonVisible = () => {
+    if (
+      (!isAnswerVisible && !options.isAnswerOnTimeoutShown && seconds === 0) ||
+      (!isAnswerVisible && !options.isTimerEnabled)
+    )
+      return true;
+  };
 
   useEffect(() => {
     if (
@@ -44,9 +56,10 @@ const Question = () => {
       options.isAnswerOnTimeoutShown &&
       seconds === 0
     ) {
-      setIsAnswerVisible(true);
+      playerStatus === "waiting" && setIsAnswerVisible(true);
+      playerStatus === "checking answer" && setIsAnswerVisible(true);
     }
-  }, [seconds, options.isTimerEnabled]);
+  }, [seconds, options.isTimerEnabled, playerStatus]);
 
   if (questionNumber <= options.numberOfQuestions || gameMode === "time attack")
     return (
@@ -81,6 +94,11 @@ const Question = () => {
                 <Text fontSize="l" fontFamily="Overpass Mono">
                   {isAnswerVisible && answer}
                 </Text>
+                {isShowAnswerButtonVisible() && (
+                  <Button onClick={() => setIsAnswerVisible(true)}>
+                    Prikaži odgovor
+                  </Button>
+                )}
               </Box>
             </Stack>
           </CardBody>

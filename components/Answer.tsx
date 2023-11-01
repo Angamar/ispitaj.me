@@ -18,20 +18,15 @@ import React, { useState, useEffect, Dispatch } from "react";
 import { useQuizContext } from "@/contexts/QuizContext";
 
 interface Answer {
-  handleAnswerVerified: () => void;
+  handleAnswerChecked: () => void;
 }
 
-const Answer = ({ handleAnswerVerified }: Answer) => {
-  const [buttonText, setButtonText] = useState("Javi se");
-
+const Answer = ({ handleAnswerChecked }: Answer) => {
   const {
     setPoints,
     generateQuestion: nextQuestion,
     isAnswerVisible,
     setIsAnswerVisible,
-    gameMode,
-    setSeconds,
-    options,
   } = useQuizContext();
 
   // const handleShowAnswer = () => {
@@ -41,14 +36,14 @@ const Answer = ({ handleAnswerVerified }: Answer) => {
 
   const handleCorrect = () => {
     setPoints((prev) => prev + 10);
+    handleAnswerChecked();
     nextQuestion();
-    handleAnswerVerified();
   };
 
   const handleWrong = () => {
     setPoints((prev) => prev - 5);
+    handleAnswerChecked();
     nextQuestion();
-    handleAnswerVerified();
   };
 
   // const handleSkip = () => {
