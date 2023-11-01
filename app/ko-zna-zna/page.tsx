@@ -1,6 +1,6 @@
 "use client";
 
-import { Box } from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
 
 import Timer from "@/components/Timer";
 import Question from "@/components/Question";
@@ -11,7 +11,14 @@ import { useEffect } from "react";
 import GameOverModal from "@/components/GameOverModal";
 
 export default function Quiz() {
-  const { restartGame, setIsGameOver, isGameOver } = useQuizContext();
+  const {
+    restartClassicTimer,
+    setIsGameOver,
+    questionNumber,
+    options,
+    isGameOver,
+    setGameMode,
+  } = useQuizContext();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleGameOver = () => {
@@ -20,20 +27,27 @@ export default function Quiz() {
   };
 
   useEffect(() => {
-    restartGame();
+    console.log("ko zna zna rendered");
+    setGameMode("classic");
+    restartClassicTimer(8);
   }, []);
+
+  useEffect(() => {
+    if (!isGameOver && questionNumber > options.numberOfQuestions) {
+      handleGameOver();
+    }
+  }, [questionNumber]);
 
   if (!isGameOver)
     return (
       <>
         <Spacer />
-        <Box>
-          ko-zna-zna
-          <Timer />
-          <Question gameMode="classic" handleGameOver={handleGameOver} />
-        </Box>
+        <Flex flexDir="column" alignItems="center">
+          <Timer type="question" />
+          <Question />
+          <Player />
+        </Flex>
         <Spacer />
-        <Player />
       </>
     );
 

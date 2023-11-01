@@ -27,7 +27,7 @@ interface QuestionProps {
 const Question = ({ handleGameOver }: QuestionProps) => {
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
-  const { setPoints, restartTimer, seconds, setSeconds, options } =
+  const { setPoints, restartClassicTimer, seconds, setSeconds, options } =
     useQuizContext();
   const [isAnswerVisible, setIsAnswerVisible] = useState(false);
   const [questionNumber, setQuestionNumber] = useState(0);
@@ -43,7 +43,7 @@ const Question = ({ handleGameOver }: QuestionProps) => {
     setQuestion(randomQuestion.question);
     setAnswer(randomQuestion.answer);
     setIsAnswerVisible(false);
-    options.isTimerEnabled && restartTimer(8);
+    options.isTimerEnabled && restartClassicTimer(8);
   };
 
   const handleShowAnswer = () => {

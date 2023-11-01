@@ -11,8 +11,15 @@ import { useEffect } from "react";
 import GameOverModal from "@/components/GameOverModal";
 
 export default function TimeAttack() {
-  const { restartGame, restartTimer, setIsGameOver, isGameOver } =
-    useQuizContext();
+  const {
+    restartGame,
+    // restartTimer,
+    setIsGameOver,
+    setGameMode,
+    options,
+    questionNumber,
+    isGameOver,
+  } = useQuizContext();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -22,8 +29,15 @@ export default function TimeAttack() {
   };
 
   useEffect(() => {
+    setGameMode("time attack");
     restartGame();
-    restartTimer(30);
+    // restartTimer(30);
+  }, []);
+
+  useEffect(() => {
+    if (questionNumber >= options.numberOfQuestions) {
+      handleGameOver();
+    }
   }, []);
 
   if (!isGameOver)
@@ -32,7 +46,7 @@ export default function TimeAttack() {
         <Spacer />
         <Box display="flex" flexDirection="column" alignItems="center">
           <TimeAttackTimer />
-          <Question gameMode="time attack" handleGameOver={handleGameOver} />
+          <Question />
         </Box>
         <Spacer />
 

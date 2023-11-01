@@ -1,9 +1,6 @@
 import React from "react";
 
-// @ts-ignore
-import { initialize } from "@paunovic/questionnaire";
-
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useQuizContext } from "@/contexts/QuizContext";
 
 import {
@@ -14,7 +11,6 @@ import {
   Box,
   Text,
   Heading,
-  CardFooter,
   Button,
   Spacer,
   HStack,
@@ -22,54 +18,21 @@ import {
 
 import Link from "next/link";
 
-import { CheckIcon, CloseIcon, ArrowRightIcon } from "@chakra-ui/icons";
+import { CloseIcon } from "@chakra-ui/icons";
+import Answer from "./Answer";
 
-interface QuestionProps {
-  handleGameOver: () => void;
-  gameMode: "classic" | "time attack";
-}
-
-const Question = ({ handleGameOver, gameMode }: QuestionProps) => {
-  const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState("");
-  const { setPoints, restartTimer, seconds, setSeconds, options } =
-    useQuizContext();
-  const [isAnswerVisible, setIsAnswerVisible] = useState(false);
-  const [questionNumber, setQuestionNumber] = useState(0);
-  const QUESTIONNAIRE = initialize();
-
-  const generateQuestion = () => {
-    setQuestionNumber((prev) => prev + 1);
-    if (gameMode === "classic" && questionNumber >= options.numberOfQuestions) {
-      handleGameOver();
-      return;
-    }
-
-    const randomQuestion = QUESTIONNAIRE.question();
-    setQuestion(randomQuestion.question);
-    setAnswer(randomQuestion.answer);
-    setIsAnswerVisible(false);
-    options.isTimerEnabled && gameMode === "classic" && restartTimer(8);
-  };
-
-  const handleShowAnswer = () => {
-    options.isTimerEnabled && gameMode === "classic" && setSeconds(0);
-    setIsAnswerVisible(true);
-  };
-
-  const handleCorrectClick = () => {
-    setPoints((prev) => prev + 10);
-    generateQuestion();
-  };
-
-  const handleWrongClick = () => {
-    setPoints((prev) => prev - 5);
-    generateQuestion();
-  };
-
-  const handleSkipClick = () => {
-    generateQuestion();
-  };
+const Question = () => {
+  const {
+    generateQuestion,
+    question,
+    answer,
+    questionNumber,
+    isAnswerVisible,
+    seconds,
+    setIsAnswerVisible,
+    gameMode,
+    options,
+  } = useQuizContext();
 
   useEffect(() => {
     generateQuestion();
@@ -83,104 +46,47 @@ const Question = ({ handleGameOver, gameMode }: QuestionProps) => {
     ) {
       setIsAnswerVisible(true);
     }
-
-    if (gameMode === "time attack" && seconds === 0) {
-      handleGameOver();
-      return;
-    }
   }, [seconds, options.isTimerEnabled]);
-
-  useEffect(() => {
-    const handleKeyPress = (event: KeyboardEvent) => {
-      if (event.code === "Space" && !isAnswerVisible) {
-        setIsAnswerVisible(true);
-      }
-
-      if (event.code === "Enter" && isAnswerVisible) {
-        handleCorrectClick();
-      }
-
-      if (event.code === "Space" && isAnswerVisible) {
-        handleWrongClick();
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyPress);
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyPress);
-    };
-  }, [isAnswerVisible]);
 
   if (questionNumber <= options.numberOfQuestions || gameMode === "time attack")
     return (
-      <Card borderRadius="2xl" w="100%" maxWidth="1000px">
-        <CardBody>
-          <Stack divider={<StackDivider />} spacing="4">
-            <Box>
-              <HStack>
-                <Text
-                  size="xs"
-                  mb="2"
-                  textTransform="uppercase"
-                  fontFamily="Overpass Mono"
-                  color="green.500"
-                >
-                  Pitanje broj {questionNumber}
-                </Text>
+      <>
+        <Card borderRadius="2xl" w="100%" maxWidth="1000px">
+          <CardBody>
+            <Stack divider={<StackDivider />} spacing="4">
+              <Box>
+                <HStack>
+                  <Text
+                    size="xs"
+                    mb="2"
+                    textTransform="uppercase"
+                    fontFamily="Overpass Mono"
+                    color="green.500"
+                  >
+                    Pitanje broj {questionNumber}
+                  </Text>
 
-                <Spacer />
-                <Link href="/">
-                  <Button mb="2" size="xs" colorScheme="gray">
-                    <CloseIcon />
-                  </Button>
-                </Link>
-              </HStack>
-              <Heading fontSize="2xl" pr={{ base: "0px", md: "60px" }}>
-                {question}
-              </Heading>
-            </Box>
-            <Box>
-              <Text fontSize="l" fontFamily="Overpass Mono">
-                {isAnswerVisible && answer}
-              </Text>
-            </Box>
-          </Stack>
-        </CardBody>
-        <CardFooter>
-          <Stack direction={["column", "row"]}>
-            {!isAnswerVisible ? (
-              <Button onClick={handleShowAnswer} tabIndex={0}>
-                Prikaži odgovor
-              </Button>
-            ) : (
-              <>
-                <Button
-                  leftIcon={<CheckIcon />}
-                  onClick={handleCorrectClick}
-                  colorScheme="green"
-                >
-                  Tačno odgovoreno
-                </Button>
-                <Button
-                  leftIcon={<CloseIcon />}
-                  onClick={handleWrongClick}
-                  colorScheme="red"
-                >
-                  Netačno odgovoreno
-                </Button>
-                <Button
-                  leftIcon={<ArrowRightIcon />}
-                  onClick={handleSkipClick}
-                  colorScheme="gray"
-                >
-                  Bez odgovora
-                </Button>
-              </>
-            )}
-          </Stack>
-        </CardFooter>
-      </Card>
+                  <Spacer />
+                  <Link href="/">
+                    <Button mb="2" size="xs" colorScheme="gray">
+                      <CloseIcon />
+                    </Button>
+                  </Link>
+                </HStack>
+                <Heading fontSize="2xl" pr={{ base: "0px", md: "60px" }}>
+                  {question}
+                </Heading>
+              </Box>
+              <Box>
+                <Text fontSize="l" fontFamily="Overpass Mono">
+                  {isAnswerVisible && answer}
+                </Text>
+              </Box>
+            </Stack>
+          </CardBody>
+        </Card>
+        {/* <Answer /> */}
+      </>
     );
 };
 

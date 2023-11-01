@@ -1,12 +1,18 @@
 "use client";
 
 import { Button, useDisclosure, Spacer, VStack } from "@chakra-ui/react";
-
+import { useQuizContext } from "@/contexts/QuizContext";
 import GameModeCard from "@/components/GameModeCard";
 import PlayerModal from "@/components/PlayerModal";
+import { useEffect } from "react";
 
 export default function Quiz() {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { restartGame } = useQuizContext();
+
+  useEffect(() => {
+    restartGame();
+  }, []);
 
   return (
     <>
